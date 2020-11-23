@@ -18,9 +18,9 @@ class Avprinter {
     return List.castFrom(json.decode(devices));
   }
 
-  static Future<bool> connectDevice(int index) async {
+  static Future<bool> connectDevice(String address) async {
     final bool check = await _channel.invokeMethod(
-        PrinterMethod.connectDevice, <String, dynamic>{'index': index});
+        PrinterMethod.connectDevice, <String, dynamic>{'address': address});
     return check ?? false;
   }
 

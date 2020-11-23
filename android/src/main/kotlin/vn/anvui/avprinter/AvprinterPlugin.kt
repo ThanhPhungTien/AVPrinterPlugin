@@ -22,6 +22,7 @@ import java.io.OutputStream
 import java.util.*
 import kotlin.collections.ArrayList
 
+
 /** AvprinterPlugin */
 class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
     /// The MethodChannel that will the communication between Flutter and native Android
@@ -66,16 +67,16 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
             }
 
             "connectDevice" -> {
-                val index = call.argument<Int>("index")
-                if (index != null) {
+                val address = call.argument<String>("address")
+
                     try {
-                        connectDevice(index)
+                        connectDevice(address!!, mBTDevices)
                         result.success(true)
                     } catch (ex: Exception) {
                         result.success(false)
                         ex.printStackTrace()
                     }
-                }
+
             }
             "printImage" -> {
                 try {
@@ -106,19 +107,19 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
             list
         } else {
             for (bt in pairedDevices as MutableSet<BluetoothDevice>) {
-                list.add(bt.name)
+                list.add("{\"name\":\""+bt.name+"\",\"address\":\""+bt.address+"\"}")
                 mBTDevices.add(bt)
             }
-
             list
         }
 
     }
 
     // chọn thiết bị trong danh sách đã từng kết nối
-    private fun connectDevice(index: Int) {
+    private fun connectDevice(address: String, mBTDevices: ArrayList<BluetoothDevice>) {
         bluetoothAdapter.cancelDiscovery()
-
+        pairedDevices = bluetoothAdapter.bondedDevices
+        val index = mBTDevices.indexOfFirst { it.address == address }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             mBTDevices[index].createBond()
         }
@@ -146,8 +147,6 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
     // tạo cổng nghe từ điện thoại với máy in bluetooth
     private fun beginListenData() {
         try {
-            //    final Handler handler = new Handler();
-//            val delimiter: Byte = 10
             stopWorker = false
             readBufferPosition = 0
             readBuffer = ByteArray(1024)
