@@ -29,4 +29,17 @@ class Avprinter {
         PrinterMethod.printImage, <String, dynamic>{'byte': byte});
     return check ?? false;
   }
+  static Future<bool> checkConnection() async {
+    final bool check = await _channel.invokeMethod<dynamic>(
+        PrinterMethod.checkConnection);
+    return check ?? false;
+  }
+
+  static Future<bool> disconnectBT() async {
+    final bool check = await _channel.invokeMethod<dynamic>(
+        PrinterMethod.disconnectBT);
+    return check ?? false;
+  }
+  
+  
 }
