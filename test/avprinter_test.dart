@@ -1,6 +1,6 @@
+import 'package:avprinter/avprinter.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:avprinter/avprinter.dart';
 
 void main() {
   const MethodChannel channel = MethodChannel('avprinter');
@@ -18,6 +18,6 @@ void main() {
   });
 
   test('getPlatformVersion', () async {
-    expect(await Avprinter.platformVersion, '42');
+    expect(await AVPrinter.platformVersion, '42');
   });
 }
