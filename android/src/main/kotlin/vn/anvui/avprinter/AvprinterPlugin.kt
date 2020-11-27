@@ -8,6 +8,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -39,6 +40,8 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
 
     @Volatile
     var stopWorker = false
+    var isConnected = false
+
     private lateinit var readBuffer: ByteArray
     private var readBufferPosition = 0
     private var thread: Thread? = null
@@ -69,13 +72,13 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
             "connectDevice" -> {
                 val address = call.argument<String>("address")
 
-                    try {
-                        connectDevice(address!!, mBTDevices)
-                        result.success(true)
-                    } catch (ex: Exception) {
-                        result.success(false)
-                        ex.printStackTrace()
-                    }
+                try {
+                    connectDevice(address!!, mBTDevices)
+                    result.success(true)
+                } catch (ex: Exception) {
+                    result.success(false)
+                    ex.printStackTrace()
+                }
 
             }
             "printImage" -> {
@@ -91,6 +94,18 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
                 }
 
             }
+            "checkConnection" -> {
+                checkConnection()
+                result.success(checkConnection())
+            }
+
+            "disconnectBT" -> {
+
+                disconnectBT()
+
+            }
+
+
         }
 
     }
@@ -100,6 +115,10 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
         disconnectBT()
     }
 
+    private fun checkConnection(): Boolean {
+        return isConnected
+    }
+
     private fun getPairedList(): ArrayList<String> {
         pairedDevices = bluetoothAdapter.bondedDevices
         val list = ArrayList<String>()
@@ -107,7 +126,7 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
             list
         } else {
             for (bt in pairedDevices as MutableSet<BluetoothDevice>) {
-                list.add("{\"name\":\""+bt.name+"\",\"address\":\""+bt.address+"\"}")
+                list.add("{\"name\":\"" + bt.name + "\",\"address\":\"" + bt.address + "\"}")
                 mBTDevices.add(bt)
             }
             list
@@ -122,11 +141,12 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
         val index = mBTDevices.indexOfFirst { it.address == address }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             mBTDevices[index].createBond()
+            isConnected=true
         }
-
         openBluetoothPrinter(mBTDevices[index])
 
     }
+
 
     // Open Bluetooth Printer
     @Throws(IOException::class)
@@ -143,6 +163,11 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
             throw  IOException(exception)
         }
     }
+
+
+
+
+
 
     // tạo cổng nghe từ điện thoại với máy in bluetooth
     private fun beginListenData() {
@@ -197,6 +222,7 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
             outputStream.close()
             inputStream.close()
             bluetoothSocket.close()
+            isConnected = false
         } catch (ex: java.lang.Exception) {
             ex.printStackTrace()
         }
