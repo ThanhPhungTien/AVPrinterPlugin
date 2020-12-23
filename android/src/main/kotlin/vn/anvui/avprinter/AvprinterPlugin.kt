@@ -103,7 +103,7 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
                 disconnectBT()
             }
             "checkBluetooth" ->{
-                result.success(bluetoothEnable)
+                result.success(checkBluetooth())
             }
 
 
@@ -118,6 +118,10 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
 
     private fun checkConnection(): Boolean {
         return isConnected
+    }
+
+    private fun checkBluetooth(): Boolean {
+        return bluetoothEnable
     }
 
     private fun getPairedList(): ArrayList<String> {
