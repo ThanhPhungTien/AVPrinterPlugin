@@ -54,6 +54,7 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
         val pm: PackageManager = flutterPluginBinding.applicationContext.packageManager
         val hasBluetooth: Boolean = pm.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)
         if (hasBluetooth) {
+
             bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         }
         mBTDevices = ArrayList()
@@ -139,9 +140,11 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
         bluetoothAdapter.cancelDiscovery()
         pairedDevices = bluetoothAdapter.bondedDevices
         val index = mBTDevices.indexOfFirst { it.address == address }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        isConnected = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             mBTDevices[index].createBond()
-            isConnected=true
+            true
+        } else {
+            false
         }
         openBluetoothPrinter(mBTDevices[index])
 
@@ -153,20 +156,20 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
     fun openBluetoothPrinter(bluetoothDevice: BluetoothDevice) {
         try {
             //Standard uuid from string //
+
             val uuidSting = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb")
             bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(uuidSting)
+            Thread.sleep(1000)
             bluetoothSocket.connect()
             outputStream = bluetoothDevice.createRfcommSocketToServiceRecord(uuidSting).outputStream
             inputStream = bluetoothDevice.createRfcommSocketToServiceRecord(uuidSting).inputStream
             beginListenData()
+
         } catch (exception: java.lang.Exception) {
+
             throw  IOException(exception)
         }
     }
-
-
-
-
 
 
     // tạo cổng nghe từ điện thoại với máy in bluetooth
@@ -207,11 +210,13 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     fun printPhoto(bitmap: Bitmap) {
-        outputStream = bluetoothSocket.outputStream
-        val command = Utils.decodeBitmap(bitmap)
-        outputStream.write(command)
-        outputStream.write(PrinterCommands.ESC_ALIGN_CENTER)
-
+        if (bluetoothSocket.isConnected) {
+            outputStream = bluetoothSocket.outputStream
+            val command = Utils.decodeBitmap(bitmap)
+            outputStream.write(command)
+        } else {
+            Log.e("PrintTools", "Connection lost, printing failing lmao")
+        }
     }
 
     // Ngắt kết nối với máy in
