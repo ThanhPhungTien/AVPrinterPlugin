@@ -8,7 +8,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.util.Log
-import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -96,14 +95,11 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
 
             }
             "checkConnection" -> {
-                checkConnection()
                 result.success(checkConnection())
             }
 
             "disconnectBT" -> {
-
                 disconnectBT()
-
             }
 
 
