@@ -6,6 +6,7 @@ class PrinterMethod {
   static const String connectDevice = "connectDevice";
   static const String checkConnection = "checkConnection";
   static const String disconnectBT = "disconnectBT";
+  static const String checkBluetooth = "checkBluetooth";
 }
 
 @JsonSerializable(explicitToJson: true)
