@@ -19,7 +19,7 @@ class AVPrinter {
   static Future<List<BluetoothObject>> get getListDevices async {
     final String devices = await _channel.invokeMethod(PrinterMethod.getList);
     final List<Map<String, dynamic>> devicesJson =
-        List.castFrom(json.decode(devices));
+    List.castFrom(json.decode(devices));
     return devicesJson
         .map<BluetoothObject>(
             (Map<String, dynamic> item) => BluetoothObject.fromJson(item))
@@ -40,20 +40,26 @@ class AVPrinter {
 
   static Future<bool> checkConnection() async {
     final bool check =
-        await _channel.invokeMethod<dynamic>(PrinterMethod.checkConnection);
+    await _channel.invokeMethod<dynamic>(PrinterMethod.checkConnection);
     return check ?? false;
   }
 
   static Future<bool> disconnectBT() async {
     final bool check =
-        await _channel.invokeMethod<dynamic>(PrinterMethod.disconnectBT);
+    await _channel.invokeMethod<dynamic>(PrinterMethod.disconnectBT);
+    return check ?? false;
+  }
+
+  static Future<bool> checkBluetooth() async {
+    final bool check =
+    await _channel.invokeMethod<dynamic>(PrinterMethod.checkBluetooth);
     return check ?? false;
   }
 
   /// Hàm chuyển Widget thành Uint8List
   static Future<Uint8List> capturePng(GlobalKey globalKey) async {
     final RenderRepaintBoundary boundary =
-        globalKey.currentContext.findRenderObject() as RenderRepaintBoundary;
+    globalKey.currentContext.findRenderObject() as RenderRepaintBoundary;
     final ui.Image image = await boundary.toImage();
     final ByteData byteData = await image.toByteData(
       format: ui.ImageByteFormat.png,
@@ -63,8 +69,7 @@ class AVPrinter {
   }
 
   /// Hàm tạo ảnh từ widget
-  static Future<Uint8List> createImageFromWidget(
-    Widget widget, {
+  static Future<Uint8List> createImageFromWidget(Widget widget, {
     Duration wait,
     Size logicalSize,
     Size imageSize,
@@ -93,12 +98,12 @@ class AVPrinter {
     renderView.prepareInitialFrame();
 
     final RenderObjectToWidgetElement<RenderBox> rootElement =
-        RenderObjectToWidgetAdapter<RenderBox>(
-            container: repaintBoundary,
-            child: Directionality(
-              textDirection: TextDirection.ltr,
-              child: widget,
-            )).attachToRenderTree(buildOwner);
+    RenderObjectToWidgetAdapter<RenderBox>(
+        container: repaintBoundary,
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: widget,
+        )).attachToRenderTree(buildOwner);
 
     buildOwner.buildScope(rootElement);
 
@@ -116,7 +121,7 @@ class AVPrinter {
     final ui.Image image = await repaintBoundary.toImage(
         pixelRatio: imageSize.width / logicalSize.width);
     final ByteData byteData =
-        await image.toByteData(format: ui.ImageByteFormat.png);
+    await image.toByteData(format: ui.ImageByteFormat.png);
 
     return byteData.buffer.asUint8List();
   }

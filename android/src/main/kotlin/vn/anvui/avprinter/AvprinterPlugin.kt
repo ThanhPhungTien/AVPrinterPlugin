@@ -40,6 +40,7 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
     @Volatile
     var stopWorker = false
     var isConnected = false
+    var bluetoothEnable = false
 
     private lateinit var readBuffer: ByteArray
     private var readBufferPosition = 0
@@ -53,7 +54,7 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
         val pm: PackageManager = flutterPluginBinding.applicationContext.packageManager
         val hasBluetooth: Boolean = pm.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)
         if (hasBluetooth) {
-
+            bluetoothEnable = true
             bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         }
         mBTDevices = ArrayList()
@@ -100,6 +101,9 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
 
             "disconnectBT" -> {
                 disconnectBT()
+            }
+            "checkBluetooth" ->{
+                result.success(bluetoothEnable)
             }
 
 
