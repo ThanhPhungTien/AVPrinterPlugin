@@ -1,7 +1,6 @@
 name: avprinter
 description: Plugin cho phép in tiếng Việt bằng máy in bluetooth bằng cách chuyển widget thành ảnh.
-version: 0.0.2+2
-author: ANVUI JSC
+version: 0.0.3
 homepage: https://anvui.vn
 
 environment:
@@ -31,8 +30,6 @@ flutter:
     platforms:
       android:
         package: vn.anvui.avprinter
-        pluginClass: AvprinterPlugin
-      ios:
         pluginClass: AvprinterPlugin
 
   # To add assets to your plugin package, add an assets section, like this:

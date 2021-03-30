@@ -1,6 +1,6 @@
-# avprinter
+# AN VUI PRINTER
 
-A new Flutter plugin.
+Plugin cho phép in tiếng Việt bằng máy in bluetooth bằng cách chuyển widget thành ảnh.
 
 ## Getting Started
 
