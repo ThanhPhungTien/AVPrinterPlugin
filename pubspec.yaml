@@ -1,7 +1,6 @@
 name: avprinter
 description: Plugin cho phép in tiếng Việt bằng máy in bluetooth bằng cách chuyển widget thành ảnh.
-version: 0.0.2+2
-author: ANVUI JSC
+version: 1.0.0
 homepage: https://anvui.vn
 
 environment:
