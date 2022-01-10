@@ -187,7 +187,7 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
 
     // in ảnh từ dữ liệu bitmap truyền vào
 
-    fun printPhoto(bitmap: Bitmap) {
+    private fun printPhoto(bitmap: Bitmap) {
         outputStream = bluetoothSocket.outputStream
         val command = Utils.decodeBitmap(bitmap)
         outputStream.write(command)

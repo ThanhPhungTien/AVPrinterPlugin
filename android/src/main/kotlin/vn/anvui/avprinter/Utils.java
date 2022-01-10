@@ -92,7 +92,7 @@ public class Utils {
     public static List<String> binaryListToHexStringList(List<String> list) {
         List<String> hexList = new ArrayList<String>();
         for (String binaryStr : list) {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             for (int i = 0; i < binaryStr.length(); i += 8) {
                 String str = binaryStr.substring(i, i + 8);
 
@@ -127,8 +127,7 @@ public class Utils {
         for (String hexStr : list) {
             commandList.add(hexStringToBytes(hexStr));
         }
-        byte[] bytes = sysCopy(commandList);
-        return bytes;
+        return sysCopy(commandList);
     }
 
     public static byte[] hexStringToBytes(String hexString) {
