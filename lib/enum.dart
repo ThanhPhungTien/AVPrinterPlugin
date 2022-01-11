@@ -10,9 +10,9 @@ class PrinterMethod {
 
 @JsonSerializable(explicitToJson: true)
 class BluetoothObject {
-  BluetoothObject({this.name, this.address});
+  BluetoothObject({this.name = '', this.address = ''});
 
-  factory BluetoothObject.fromJson(Map<String, dynamic> data) {
+  factory BluetoothObject.fromJson(Map<String, dynamic>? data) {
     if (data == null) return BluetoothObject();
     return BluetoothObject(name: data['name'], address: data['address']);
   }

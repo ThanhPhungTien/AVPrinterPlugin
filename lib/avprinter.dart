@@ -17,8 +17,8 @@ class AVPrinter {
   }
 
   static Future<List<BluetoothObject>> get getListDevices async {
-    final String devices = await (_channel.invokeMethod(PrinterMethod.getList)
-        as FutureOr<String>);
+    final String devices =
+        await (_channel.invokeMethod(PrinterMethod.getList) as Future<String>);
 
     final List<dynamic> devicesJson = json.decode(devices);
 
@@ -32,47 +32,46 @@ class AVPrinter {
   static Future<bool> connectDevice(String address) async {
     final bool check = await _channel.invokeMethod(
         PrinterMethod.connectDevice, <String, dynamic>{'address': address});
-    return check ?? false;
+    return check;
   }
 
   static Future<bool> printImage(Uint8List byte) async {
     final bool check = await (_channel.invokeMethod<dynamic>(
             PrinterMethod.printImage, <String, dynamic>{'byte': byte})
-        as FutureOr<bool>);
-    return check ?? false;
+        as Future<bool>);
+    return check;
   }
 
   static Future<bool> checkConnection() async {
-    final bool check =
-        await (_channel.invokeMethod<dynamic>(PrinterMethod.checkConnection)
-            as FutureOr<bool>);
-    return check ?? false;
+    final bool check = await (_channel
+        .invokeMethod<dynamic>(PrinterMethod.checkConnection) as Future<bool>);
+    return check;
   }
 
   static Future<bool> disconnectBT() async {
     final bool check = await (_channel
         .invokeMethod<dynamic>(PrinterMethod.disconnectBT) as Future<bool>);
-    return check ?? false;
+    return check;
   }
 
   /// Hàm chuyển Widget thành Uint8List
-  static Future<Uint8List> capturePng(GlobalKey globalKey) async {
+  static Future<Uint8List?> capturePng(GlobalKey globalKey) async {
     final RenderRepaintBoundary boundary =
-        globalKey.currentContext.findRenderObject() as RenderRepaintBoundary;
+        globalKey.currentContext?.findRenderObject() as RenderRepaintBoundary;
     final ui.Image image = await boundary.toImage();
-    final ByteData byteData = await (image.toByteData(
+    final ByteData? byteData = await (image.toByteData(
       format: ui.ImageByteFormat.png,
     ));
-    final Uint8List pngBytes = byteData.buffer.asUint8List();
+    final Uint8List? pngBytes = byteData?.buffer.asUint8List();
     return pngBytes;
   }
 
   /// Hàm tạo ảnh từ widget
-  static Future<Uint8List> createImageFromWidget(
+  static Future<Uint8List?> createImageFromWidget(
     Widget widget, {
-    Duration wait,
-    Size logicalSize,
-    Size imageSize,
+    Duration? wait,
+    Size? logicalSize,
+    Size? imageSize,
   }) async {
     final RenderRepaintBoundary repaintBoundary = RenderRepaintBoundary();
 
@@ -82,7 +81,6 @@ class AVPrinter {
     assert(logicalSize.aspectRatio == imageSize.aspectRatio);
 
     final RenderView renderView = RenderView(
-      window: null,
       child: RenderPositionedBox(
         alignment: Alignment.center,
         child: repaintBoundary,
@@ -91,6 +89,7 @@ class AVPrinter {
         size: logicalSize,
         devicePixelRatio: 1.0,
       ),
+      window: ui.window,
     );
 
     final PipelineOwner pipelineOwner = PipelineOwner();
@@ -122,9 +121,9 @@ class AVPrinter {
 
     final ui.Image image = await repaintBoundary.toImage(
         pixelRatio: imageSize.width / logicalSize.width);
-    final ByteData byteData =
+    final ByteData? byteData =
         await (image.toByteData(format: ui.ImageByteFormat.png));
 
-    return byteData.buffer.asUint8List();
+    return byteData?.buffer.asUint8List();
   }
 }

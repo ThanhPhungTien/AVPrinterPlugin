@@ -7,11 +7,7 @@ packages:
       name: async
       url: "https://pub.dartlang.org"
     source: hosted
-<<<<<<< HEAD
     version: "2.8.2"
-=======
-    version: "2.8.1"
->>>>>>> 099ba0311e6ecfbccfaef6833616ccd7d9351832
   boolean_selector:
     dependency: transitive
     description:
@@ -70,11 +66,7 @@ packages:
       name: json_annotation
       url: "https://pub.dartlang.org"
     source: hosted
-<<<<<<< HEAD
     version: "4.4.0"
-=======
-    version: "4.3.0"
->>>>>>> 099ba0311e6ecfbccfaef6833616ccd7d9351832
   matcher:
     dependency: transitive
     description:
@@ -142,11 +134,7 @@ packages:
       name: test_api
       url: "https://pub.dartlang.org"
     source: hosted
-<<<<<<< HEAD
     version: "0.4.3"
-=======
-    version: "0.4.2"
->>>>>>> 099ba0311e6ecfbccfaef6833616ccd7d9351832
   typed_data:
     dependency: transitive
     description:
