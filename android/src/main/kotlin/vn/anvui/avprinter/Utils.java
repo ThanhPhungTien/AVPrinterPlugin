@@ -15,8 +15,8 @@ public class Utils {
             0x23, 0x23, 0x23,0x23, 0x23, 0x23,0x23, 0x23, 0x23,0x23, 0x23, 0x23,
             0x23, 0x23, 0x23};
 
-    private static String hexStr = "0123456789ABCDEF";
-    private static String[] binaryArray = { "0000", "0001", "0010", "0011",
+    private static final String hexStr = "0123456789ABCDEF";
+    private static final String[] binaryArray = { "0000", "0001", "0010", "0011",
             "0100", "0101", "0110", "0111", "1000", "1001", "1010", "1011",
             "1100", "1101", "1110", "1111" };
 
@@ -24,18 +24,18 @@ public class Utils {
         int bmpWidth = bmp.getWidth();
         int bmpHeight = bmp.getHeight();
 
-        List<String> list = new ArrayList<String>(); //binaryString list
+        List<String> list = new ArrayList<>(); //binaryString list
         StringBuffer sb;
 
 
         int bitLen = bmpWidth / 8;
         int zeroCount = bmpWidth % 8;
 
-        String zeroStr = "";
+        StringBuilder zeroStr = new StringBuilder();
         if (zeroCount > 0) {
             bitLen = bmpWidth / 8 + 1;
             for (int i = 0; i < (8 - zeroCount); i++) {
-                zeroStr = zeroStr + "0";
+                zeroStr.append("0");
             }
         }
 
@@ -82,7 +82,7 @@ public class Utils {
         }
         heightHexString = heightHexString + "00";
 
-        List<String> commandList = new ArrayList<String>();
+        List<String> commandList = new ArrayList<>();
         commandList.add(commandHexString+widthHexString+heightHexString);
         commandList.addAll(bmpHexList);
 
@@ -90,7 +90,7 @@ public class Utils {
     }
 
     public static List<String> binaryListToHexStringList(List<String> list) {
-        List<String> hexList = new ArrayList<String>();
+        List<String> hexList = new ArrayList<>();
         for (String binaryStr : list) {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < binaryStr.length(); i += 8) {
@@ -106,23 +106,23 @@ public class Utils {
     }
 
     public static String myBinaryStrToHexString(String binaryStr) {
-        String hex = "";
+        StringBuilder hex = new StringBuilder();
         String f4 = binaryStr.substring(0, 4);
         String b4 = binaryStr.substring(4, 8);
         for (int i = 0; i < binaryArray.length; i++) {
             if (f4.equals(binaryArray[i]))
-                hex += hexStr.substring(i, i + 1);
+                hex.append(hexStr.charAt(i));
         }
         for (int i = 0; i < binaryArray.length; i++) {
             if (b4.equals(binaryArray[i]))
-                hex += hexStr.substring(i, i + 1);
+                hex.append(hexStr.charAt(i));
         }
 
-        return hex;
+        return hex.toString();
     }
 
     public static byte[] hexList2Byte(List<String> list) {
-        List<byte[]> commandList = new ArrayList<byte[]>();
+        List<byte[]> commandList = new ArrayList<>();
 
         for (String hexStr : list) {
             commandList.add(hexStringToBytes(hexStr));

@@ -37,7 +37,7 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
 
     @Volatile
     var stopWorker = false
-    var isConnected = false
+    private var isConnected = false
     private lateinit var readBuffer: ByteArray
     private var readBufferPosition = 0
     private var thread: Thread? = null

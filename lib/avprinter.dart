@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -17,8 +18,7 @@ class AVPrinter {
   }
 
   static Future<List<BluetoothObject>> get getListDevices async {
-    final String devices =
-        await (_channel.invokeMethod(PrinterMethod.getList) as Future<String>);
+    final String devices = await (_channel.invokeMethod(PrinterMethod.getList));
 
     final List<dynamic> devicesJson = json.decode(devices);
 
@@ -30,27 +30,33 @@ class AVPrinter {
   }
 
   static Future<bool> connectDevice(String address) async {
-    final bool check = await _channel.invokeMethod(
+    log('conect device $address');
+    final dynamic check = await _channel.invokeMethod(
         PrinterMethod.connectDevice, <String, dynamic>{'address': address});
+
+    log('connectDevice $check');
     return check;
   }
 
   static Future<bool> printImage(Uint8List byte) async {
-    final bool check = await (_channel.invokeMethod<dynamic>(
-            PrinterMethod.printImage, <String, dynamic>{'byte': byte})
-        as Future<bool>);
+    final dynamic check = await (_channel.invokeMethod<dynamic>(
+        PrinterMethod.printImage, <String, dynamic>{'byte': byte}));
+    log('printImage $check');
     return check;
   }
 
   static Future<bool> checkConnection() async {
-    final bool check = await (_channel
-        .invokeMethod<dynamic>(PrinterMethod.checkConnection) as Future<bool>);
+    final dynamic check =
+        await (_channel.invokeMethod<dynamic>(PrinterMethod.checkConnection));
+
+    log('checkConnection $check');
     return check;
   }
 
   static Future<bool> disconnectBT() async {
-    final bool check = await (_channel
-        .invokeMethod<dynamic>(PrinterMethod.disconnectBT) as Future<bool>);
+    final dynamic check =
+        await (_channel.invokeMethod<dynamic>(PrinterMethod.disconnectBT));
+    log('disconnectBT $check');
     return check;
   }
 
@@ -63,16 +69,75 @@ class AVPrinter {
       format: ui.ImageByteFormat.png,
     ));
     final Uint8List? pngBytes = byteData?.buffer.asUint8List();
+
     return pngBytes;
   }
 
   /// Hàm tạo ảnh từ widget
-  static Future<Uint8List?> createImageFromWidget(
+  static Future<Uint8List> createImageFromWidget(
     Widget widget, {
     Duration? wait,
     Size? logicalSize,
     Size? imageSize,
   }) async {
+    // final RenderRepaintBoundary repaintBoundary = RenderRepaintBoundary();
+    //
+    // logicalSize ??= ui.window.physicalSize / ui.window.devicePixelRatio;
+    // imageSize ??= ui.window.physicalSize;
+    //
+    // assert(logicalSize.aspectRatio == imageSize.aspectRatio);
+    //
+    // final RenderView renderView = RenderView(
+    //   child: RenderPositionedBox(
+    //     alignment: Alignment.center,
+    //     child: repaintBoundary,
+    //   ),
+    //   configuration: ViewConfiguration(
+    //     size: logicalSize,
+    //     devicePixelRatio: 1.0,
+    //   ),
+    //   window: ui.window,
+    // );
+    //
+    // final PipelineOwner pipelineOwner = PipelineOwner();
+    //
+    // final BuildOwner buildOwner = BuildOwner(focusManager: FocusManager());
+    //
+    // pipelineOwner.rootNode = renderView;
+    // renderView.prepareInitialFrame();
+    //
+    // final RenderObjectToWidgetElement<RenderBox> rootElement =
+    //     RenderObjectToWidgetAdapter<RenderBox>(
+    //   container: repaintBoundary,
+    //   child: Directionality(
+    //     textDirection: TextDirection.ltr,
+    //     child: widget,
+    //   ),
+    // ).attachToRenderTree(buildOwner);
+    //
+    // buildOwner.buildScope(rootElement);
+    //
+    // if (wait != null) {
+    //   await Future<dynamic>.delayed(wait);
+    // }
+    //
+    // buildOwner.buildScope(rootElement);
+    // buildOwner.finalizeTree();
+    //
+    // pipelineOwner.flushLayout();
+    // pipelineOwner.flushCompositingBits();
+    // pipelineOwner.flushPaint();
+    //
+    // final ui.Image image = await repaintBoundary.toImage(
+    //   pixelRatio: imageSize.width / logicalSize.width,
+    // );
+    //
+    // final ByteData? byteData = await (image.toByteData(
+    //   format: ui.ImageByteFormat.png,
+    // ));
+    //
+    // return byteData?.buffer.asUint8List();
+
     final RenderRepaintBoundary repaintBoundary = RenderRepaintBoundary();
 
     logicalSize ??= ui.window.physicalSize / ui.window.devicePixelRatio;
@@ -81,35 +146,34 @@ class AVPrinter {
     assert(logicalSize.aspectRatio == imageSize.aspectRatio);
 
     final RenderView renderView = RenderView(
+      window: ui.window,
       child: RenderPositionedBox(
-        alignment: Alignment.center,
-        child: repaintBoundary,
-      ),
+          alignment: Alignment.center, child: repaintBoundary),
       configuration: ViewConfiguration(
         size: logicalSize,
         devicePixelRatio: 1.0,
       ),
-      window: ui.window,
     );
 
     final PipelineOwner pipelineOwner = PipelineOwner();
-    final BuildOwner buildOwner = BuildOwner();
+    final BuildOwner buildOwner = BuildOwner(focusManager: FocusManager());
 
     pipelineOwner.rootNode = renderView;
     renderView.prepareInitialFrame();
 
     final RenderObjectToWidgetElement<RenderBox> rootElement =
         RenderObjectToWidgetAdapter<RenderBox>(
-            container: repaintBoundary,
-            child: Directionality(
-              textDirection: TextDirection.ltr,
-              child: widget,
-            )).attachToRenderTree(buildOwner);
+      container: repaintBoundary,
+      child: Directionality(
+        textDirection: TextDirection.ltr,
+        child: widget,
+      ),
+    ).attachToRenderTree(buildOwner);
 
     buildOwner.buildScope(rootElement);
 
     if (wait != null) {
-      await Future<dynamic>.delayed(wait);
+      await Future.delayed(wait);
     }
 
     buildOwner.buildScope(rootElement);
@@ -122,8 +186,8 @@ class AVPrinter {
     final ui.Image image = await repaintBoundary.toImage(
         pixelRatio: imageSize.width / logicalSize.width);
     final ByteData? byteData =
-        await (image.toByteData(format: ui.ImageByteFormat.png));
+        await image.toByteData(format: ui.ImageByteFormat.png);
 
-    return byteData?.buffer.asUint8List();
+    return byteData!.buffer.asUint8List();
   }
 }
