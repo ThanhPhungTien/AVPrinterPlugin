@@ -12,12 +12,12 @@ class PrinterMethod {
 class BluetoothObject {
   BluetoothObject({this.name, this.address});
 
-  factory BluetoothObject.fromJson(Map<String, dynamic>? data) {
+  factory BluetoothObject.fromJson(Map<String, dynamic> data) {
     if (data == null) return BluetoothObject();
     return BluetoothObject(name: data['name'], address: data['address']);
   }
-  final String? name;
-  final String? address;
+  final String name;
+  final String address;
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{

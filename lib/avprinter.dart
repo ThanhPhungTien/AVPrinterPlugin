@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-import 'dart:ui';
 
 import 'package:avprinter/enum.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +11,8 @@ import 'package:flutter/services.dart';
 class AVPrinter {
   static const MethodChannel _channel = const MethodChannel('avprinter');
 
-  static Future<String?> get platformVersion async {
-    final String? version = await _channel.invokeMethod('getPlatformVersion');
+  static Future<String> get platformVersion async {
+    final String version = await _channel.invokeMethod('getPlatformVersion');
     return version;
   }
 
@@ -31,39 +30,39 @@ class AVPrinter {
   }
 
   static Future<bool> connectDevice(String address) async {
-    final bool? check = await _channel.invokeMethod(
+    final bool check = await _channel.invokeMethod(
         PrinterMethod.connectDevice, <String, dynamic>{'address': address});
     return check ?? false;
   }
 
   static Future<bool> printImage(Uint8List byte) async {
-    final bool? check = await (_channel.invokeMethod<dynamic>(
+    final bool check = await (_channel.invokeMethod<dynamic>(
             PrinterMethod.printImage, <String, dynamic>{'byte': byte})
-        as FutureOr<bool?>);
+        as FutureOr<bool>);
     return check ?? false;
   }
 
   static Future<bool> checkConnection() async {
-    final bool? check =
+    final bool check =
         await (_channel.invokeMethod<dynamic>(PrinterMethod.checkConnection)
-            as FutureOr<bool?>);
+            as FutureOr<bool>);
     return check ?? false;
   }
 
   static Future<bool> disconnectBT() async {
-    final bool? check = await (_channel
-        .invokeMethod<dynamic>(PrinterMethod.disconnectBT) as FutureOr<bool?>);
+    final bool check = await (_channel
+        .invokeMethod<dynamic>(PrinterMethod.disconnectBT) as Future<bool>);
     return check ?? false;
   }
 
   /// Hàm chuyển Widget thành Uint8List
   static Future<Uint8List> capturePng(GlobalKey globalKey) async {
     final RenderRepaintBoundary boundary =
-        globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+        globalKey.currentContext.findRenderObject() as RenderRepaintBoundary;
     final ui.Image image = await boundary.toImage();
     final ByteData byteData = await (image.toByteData(
       format: ui.ImageByteFormat.png,
-    ) as FutureOr<ByteData>);
+    ));
     final Uint8List pngBytes = byteData.buffer.asUint8List();
     return pngBytes;
   }
@@ -71,9 +70,9 @@ class AVPrinter {
   /// Hàm tạo ảnh từ widget
   static Future<Uint8List> createImageFromWidget(
     Widget widget, {
-    Duration? wait,
-    Size? logicalSize,
-    Size? imageSize,
+    Duration wait,
+    Size logicalSize,
+    Size imageSize,
   }) async {
     final RenderRepaintBoundary repaintBoundary = RenderRepaintBoundary();
 
@@ -83,7 +82,7 @@ class AVPrinter {
     assert(logicalSize.aspectRatio == imageSize.aspectRatio);
 
     final RenderView renderView = RenderView(
-      window: null as FlutterView,
+      window: null,
       child: RenderPositionedBox(
         alignment: Alignment.center,
         child: repaintBoundary,
@@ -123,8 +122,8 @@ class AVPrinter {
 
     final ui.Image image = await repaintBoundary.toImage(
         pixelRatio: imageSize.width / logicalSize.width);
-    final ByteData byteData = await (image.toByteData(
-        format: ui.ImageByteFormat.png) as FutureOr<ByteData>);
+    final ByteData byteData =
+        await (image.toByteData(format: ui.ImageByteFormat.png));
 
     return byteData.buffer.asUint8List();
   }
