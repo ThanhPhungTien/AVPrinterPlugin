@@ -184,7 +184,8 @@ class AVPrinter {
     pipelineOwner.flushPaint();
 
     final ui.Image image = await repaintBoundary.toImage(
-        pixelRatio: imageSize.width / logicalSize.width);
+      pixelRatio: imageSize.width / logicalSize.width,
+    );
     final ByteData? byteData =
         await image.toByteData(format: ui.ImageByteFormat.png);
 
