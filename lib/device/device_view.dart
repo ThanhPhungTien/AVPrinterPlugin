@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:avprinter/device/device_cubit.dart';
 import 'package:avprinter/enum.dart';
 import 'package:flutter/material.dart';
@@ -26,8 +28,10 @@ class _DeviceViewState extends State<DeviceView> {
     return Scaffold(
       appBar: AppBar(),
       body: BlocBuilder<DeviceCubit, DeviceState>(
+        bloc: bloc,
         builder: (context, state) {
           if (state is DeviceStateNormal) {
+            log('address ${state.address}');
             return ListView.builder(
               padding: const EdgeInsets.all(8),
               itemCount: state.divices.length,
@@ -35,7 +39,14 @@ class _DeviceViewState extends State<DeviceView> {
                 BluetoothObject item = state.divices[index];
                 return Material(
                   color: Colors.white,
+                  elevation: 2,
                   child: ListTile(
+                    onTap: () {
+                      log('item ${item.toJson()}');
+                      bloc.selectDivice(item.address);
+                    },
+                    selected: item.address == state.address,
+                    selectedColor: Colors.blue,
                     title: Text(item.name),
                     subtitle: Text(item.address),
                   ),

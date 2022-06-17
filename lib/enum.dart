@@ -26,3 +26,7 @@ class BluetoothObject {
     };
   }
 }
+
+class PrinterConstant {
+  static const String selectDivice = 'selectDivice';
+}
