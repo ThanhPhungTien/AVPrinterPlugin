@@ -13,7 +13,6 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import kotlinx.coroutines.Dispatchers.Default
 import org.json.JSONArray
 import java.io.IOException
 import java.io.InputStream
@@ -38,8 +37,8 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
     private lateinit var inputStream: InputStream
     private val myUUID =
         UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
-    private val starPosAddress = "11:22:33:44:55:66"
-    private val sunmiAddress = "00:11:22:33:44:55"
+//    private val starPosAddress = "11:22:33:44:55:66"
+//    private val sunmiAddress = "00:11:22:33:44:55"
 
     @Volatile
     var stopWorker = false
@@ -143,39 +142,39 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
 
     }
 
-    private fun getDevice(): BluetoothDevice? {
+//    private fun getDevice(): BluetoothDevice? {
+//
+//        var device: BluetoothDevice? = getSunmiDevice()
+//
+//        if (device == null) {
+//            Log.e("getDevice", "deviceNUll")
+//
+//            device = getStarPosDevice()
+//        }
+//
+//        return device
+//    }
 
-        var device: BluetoothDevice? = getSunmiDevice()
-
-        if (device == null) {
-            Log.e("getDevice", "deviceNUll");
-
-            device = getStarPosDevice()
-        }
-
-        return device
-    }
-
-    private fun getSunmiDevice(): BluetoothDevice? {
-        return try {
-            bluetoothAdapter.getRemoteDevice(sunmiAddress)
-        } catch (e: java.lang.Exception) {
-            null
-        }
-    }
-
-    private fun getStarPosDevice(): BluetoothDevice? {
-        return try {
-            bluetoothAdapter.getRemoteDevice(starPosAddress)
-        } catch (e: java.lang.Exception) {
-            null
-        }
-    }
+//    private fun getSunmiDevice(): BluetoothDevice? {
+//        return try {
+//            bluetoothAdapter.getRemoteDevice(sunmiAddress)
+//        } catch (e: java.lang.Exception) {
+//            null
+//        }
+//    }
+//
+//    private fun getStarPosDevice(): BluetoothDevice? {
+//        return try {
+//            bluetoothAdapter.getRemoteDevice(starPosAddress)
+//        } catch (e: java.lang.Exception) {
+//            null
+//        }
+//    }
 
     // chọn thiết bị trong danh sách đã từng kết nối
 
     private fun connectDevice(address: String): Boolean {
-        this.address = address;
+        this.address = address
         val bluetoothDevice = bluetoothAdapter.getRemoteDevice(address)
         if (bluetoothDevice != null) {
             Log.e("Bluetooth", "Has Device")
@@ -245,7 +244,12 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
     // in ảnh từ dữ liệu bitmap truyền vào
 
     private fun printPhoto(bitmap: Bitmap): Boolean {
-        if (connectDevice(address)) {
+
+        if (!isConnected) {
+            isConnected = connectDevice(address)
+        }
+
+        if (isConnected) {
             outputStream = bluetoothSocket.outputStream
             val command = Utils.decodeBitmap(bitmap)
             outputStream.write(command)
@@ -254,6 +258,8 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
             Log.e("Bluetooth", "Print Photo done")
             return true
         }
+
+
 
         return false
     }

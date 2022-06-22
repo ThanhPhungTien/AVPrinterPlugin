@@ -23,9 +23,9 @@ public class Utils {
             "1100", "1101", "1110", "1111" };
 
     public static String getStringImage(Bitmap bmp){
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.PNG, 100, baos);
-        byte[] imageBytes = baos.toByteArray();
+        ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.PNG, 100, byteArray);
+        byte[] imageBytes = byteArray.toByteArray();
         return Base64.encodeToString(imageBytes, Base64.DEFAULT);
     }
 
@@ -34,7 +34,7 @@ public class Utils {
         int bmpHeight = bmp.getHeight();
 
         List<String> list = new ArrayList<>(); //binaryString list
-        StringBuffer sb;
+        StringBuilder sb;
 
 
         int bitLen = bmpWidth / 8;
@@ -49,7 +49,7 @@ public class Utils {
         }
 
         for (int i = 0; i < bmpHeight; i++) {
-            sb = new StringBuffer();
+            sb = new StringBuilder();
             for (int j = 0; j < bmpWidth; j++) {
                 int color = bmp.getPixel(j, i);
 

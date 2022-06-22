@@ -25,9 +25,8 @@ class _DeviceViewState extends State<DeviceView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: BlocBuilder<DeviceCubit, DeviceState>(
+    return Material(
+      child: BlocBuilder<DeviceCubit, DeviceState>(
         bloc: bloc,
         builder: (context, state) {
           if (state is DeviceStateNormal) {
