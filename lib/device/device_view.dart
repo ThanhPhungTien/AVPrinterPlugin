@@ -33,6 +33,7 @@ class _DeviceViewState extends State<DeviceView> {
             log('address ${state.address}');
             return ListView.builder(
               padding: const EdgeInsets.all(8),
+              shrinkWrap: true,
               itemCount: state.divices.length,
               itemBuilder: (BuildContext context, int index) {
                 BluetoothObject item = state.divices[index];
@@ -41,7 +42,6 @@ class _DeviceViewState extends State<DeviceView> {
                   elevation: 2,
                   child: ListTile(
                     onTap: () {
-                      log('item ${item.toJson()}');
                       bloc.selectDivice(item.address);
                     },
                     selected: item.address == state.address,
