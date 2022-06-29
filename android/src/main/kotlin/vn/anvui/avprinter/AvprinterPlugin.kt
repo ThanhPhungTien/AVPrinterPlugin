@@ -1,6 +1,8 @@
 package vn.anvui.avprinter
 
 import android.Manifest
+import android.Manifest.permission.BLUETOOTH
+import android.Manifest.permission.BLUETOOTH_CONNECT
 import android.app.Activity.RESULT_OK
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
@@ -12,11 +14,15 @@ import android.graphics.BitmapFactory
 import android.os.Build
 import android.util.Log
 import androidx.annotation.NonNull
+import androidx.core.app.ActivityCompat
 import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import io.flutter.plugin.common.PluginRegistry
 import org.json.JSONArray
 import java.io.IOException
 import java.io.InputStream
@@ -26,7 +32,8 @@ import kotlin.collections.ArrayList
 
 
 /** AvprinterPlugin */
-class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
+class AvprinterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
+    PluginRegistry.RequestPermissionsResultListener {
     /// The MethodChannel that will the communication between Flutter and native Android
     ///
     /// This local reference serves to register the plugin with the Flutter Engine and unregister it
@@ -41,8 +48,6 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
     private lateinit var inputStream: InputStream
     private val myUUID =
         UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
-//    private val starPosAddress = "11:22:33:44:55:66"
-//    private val sunmiAddress = "00:11:22:33:44:55"
 
     @Volatile
     var stopWorker = false
@@ -65,15 +70,14 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
 
             bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         }
+
         mBTDevices = ArrayList()
     }
-
 
     override fun onMethodCall(
         @NonNull call: MethodCall,
         @NonNull result: Result
     ) {
-
 
 
         when (call.method) {
@@ -264,6 +268,42 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler {
     }
 
 
+    override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            binding.activity.requestPermissions(
+                arrayOf(BLUETOOTH_CONNECT), 6969,
+            )
+
+        };
+
+
+    }
+
+    override fun onDetachedFromActivityForConfigChanges() {
+
+    }
+
+    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+
+    }
+
+    override fun onDetachedFromActivity() {
+
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ): Boolean {
+        if (requestCode == 6969) {
+            if (permissions.contains(BLUETOOTH_CONNECT) ) {
+                return grantResults.contains(RESULT_OK)
+            }
+        }
+        return false
+
+    }
 
 
 }
