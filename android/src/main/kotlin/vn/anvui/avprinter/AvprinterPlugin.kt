@@ -1,20 +1,18 @@
 package vn.anvui.avprinter
 
-import android.Manifest
-import android.Manifest.permission.BLUETOOTH
 import android.Manifest.permission.BLUETOOTH_CONNECT
 import android.app.Activity.RESULT_OK
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothSocket
-import android.content.Intent
+import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.util.Log
 import androidx.annotation.NonNull
-import androidx.core.app.ActivityCompat
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -28,7 +26,6 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 /** AvprinterPlugin */
@@ -67,8 +64,8 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
         val hasBluetooth: Boolean =
             pm.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)
         if (hasBluetooth) {
-
-            bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+            val bluetoothManager = flutterPluginBinding.applicationContext.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+            bluetoothAdapter = bluetoothManager.adapter
         }
 
         mBTDevices = ArrayList()
@@ -230,10 +227,12 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     private fun printPhoto(bitmap: Bitmap): Boolean {
 
         if (!isConnected) {
+            Log.e("Bluetooth", "is Not Connected then Connect $address")
             isConnected = connectDevice(address)
         }
 
         if (isConnected) {
+            Log.e("Bluetooth", "Connected device")
             outputStream = bluetoothSocket.outputStream
             val command = Utils.decodeBitmap(bitmap)
             outputStream.write(command)
@@ -274,7 +273,7 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
                 arrayOf(BLUETOOTH_CONNECT), 6969,
             )
 
-        };
+        }
 
 
     }
