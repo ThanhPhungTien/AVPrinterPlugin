@@ -38,6 +38,7 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     private lateinit var channel: MethodChannel
     private lateinit var pairedDevices: Set<BluetoothDevice>
     private lateinit var bluetoothAdapter: BluetoothAdapter
+    private lateinit var bluetoothManager: BluetoothManager
     private var mBTDevices = ArrayList<BluetoothDevice>()
 
     private lateinit var bluetoothSocket: BluetoothSocket
@@ -64,8 +65,8 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
         val hasBluetooth: Boolean =
             pm.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)
         if (hasBluetooth) {
-            val bluetoothManager = flutterPluginBinding.applicationContext.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-            bluetoothAdapter = bluetoothManager.adapter
+            bluetoothManager =
+                flutterPluginBinding.applicationContext.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         }
 
         mBTDevices = ArrayList()
@@ -136,7 +137,7 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     }
 
     private fun getPairedList(): ArrayList<String> {
-
+        bluetoothAdapter = bluetoothManager.adapter
         pairedDevices = bluetoothAdapter.bondedDevices
         val list = ArrayList<String>()
         return if (pairedDevices.isEmpty()) {
@@ -155,6 +156,7 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     // chọn thiết bị trong danh sách đã từng kết nối
 
     private fun connectDevice(address: String): Boolean {
+        bluetoothAdapter = bluetoothManager.adapter
         this.address = address
         val bluetoothDevice = bluetoothAdapter.getRemoteDevice(address)
         if (bluetoothDevice != null) {
@@ -174,6 +176,7 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     @Throws(IOException::class)
     fun openBluetoothPrinter(bluetoothDevice: BluetoothDevice) {
         try {
+            bluetoothAdapter = bluetoothManager.adapter
             bluetoothAdapter.cancelDiscovery()
             bluetoothSocket =
                 bluetoothDevice.createRfcommSocketToServiceRecord(myUUID)
@@ -296,7 +299,7 @@ class AvprinterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
         grantResults: IntArray
     ): Boolean {
         if (requestCode == 6969) {
-            if (permissions.contains(BLUETOOTH_CONNECT) ) {
+            if (permissions.contains(BLUETOOTH_CONNECT)) {
                 return grantResults.contains(RESULT_OK)
             }
         }
